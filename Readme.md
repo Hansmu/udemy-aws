@@ -1,10 +1,12 @@
 <h2>AWS Regions</h2>
 AWS has regions all around the world. It's just what it says, a region somewhere in the world.
-Ex us-east-1.
+Ex us-east-1. Each region has their own data. So data that's stored in one region
+doesn't automatically become accessible in another region.
 
 Each region has availability zones. Ex. us-east-1a, us-east-1b. Each availability zone represents
 a physical data center in the region. But they're physically separate from one another. Try and 
-minimize threat from physical damage. Ex. disasters.
+minimize threat from physical damage. Ex. disasters. They are still connected
+with each other with a high bandwidth, ultra-low latency network.
 
 AWS Consoles are region scoped (except IAM and S3). When you perform an action it will be 
 performed in the specific region. Choose the closest region to you.
@@ -18,10 +20,10 @@ This is where the AWS security is.
 Root account should never be used (and shared). Only use it for the very first time to
 create an account and then never again.
 
-Users are usually physical people. They are grouped into groups, usually by function, team
+**Users** are usually physical people. They are grouped into **groups**, usually by function, team
 or something similar.
 
-Roles are given to machines. They're for internal usage within AWS resources.
+**Roles** are given to machines. They're for internal usage within AWS resources.
 
 Policies are defined as JSON for those above entities. It defines what each of the above
 can and cannot do. It's always good to give the users the minimal amount of permissions
@@ -41,3 +43,9 @@ So the basic rules are:
 * Never write IAM credentials in code
 * Never use ROOT account except for initial setup
 * Never use ROOT IAM credentials
+
+Permissions should be applied using groups, as it's more easily manageable. 
+The users are put into groups from which they extend permissions.
+
+IAM password policy can be applied to make sure that the users create strong 
+passwords.
