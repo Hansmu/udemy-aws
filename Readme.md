@@ -49,3 +49,19 @@ The users are put into groups from which they extend permissions.
 
 IAM password policy can be applied to make sure that the users create strong 
 passwords.
+
+<h2>EC2</h2>
+
+It consists of:
+* Renting virtual machines (EC2)
+* Storing data on virtual drives (EBS)
+* Distributing load across machines (ELB)
+* Scaling the services using an auto-scaling group (ASG)
+
+The first part of creating an image is choosing an operating system for the machine.
+Amazon Linux comes with a lot of Amazon features and it's kind of the way that 
+Amazon imagines you using the services, so it's a good place to start.
+
+Then you have to select the type, which means how powerful your machine should be.
+
+Tags can be added to make identifying the instance easier.
