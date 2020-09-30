@@ -70,6 +70,14 @@ With EC2 connect behind the scenes AWS will generate a key to connect to
 it temporarily. If SSH is turned off, then it won't work. It works using
 Amazon Linux 2 AMI.
 
+Elastic IP can be used to give an EC2 machine a static IP. It can be attached
+to a single machine at a time. By default the EC2 IP can change with each 
+restart. This often reflects poor architectural decisions, so it would be
+better to avoid it. Instead, use a random public IP and register a DNS name
+to it. Or we can use a load balancer and not use a public IP at all.
+
+Having an Elastic IP on your account, even if unassociated, will cost money.
+
 <h2>Security Group</h2>
 The fundamental of network security in AWS. They control how traffic is allowed 
 into or out of our EC2 Machines. They are like the firewall for EC2 instances.
