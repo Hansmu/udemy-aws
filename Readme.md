@@ -65,3 +65,33 @@ Amazon imagines you using the services, so it's a good place to start.
 Then you have to select the type, which means how powerful your machine should be.
 
 Tags can be added to make identifying the instance easier.
+
+With EC2 connect behind the scenes AWS will generate a key to connect to 
+it temporarily. If SSH is turned off, then it won't work. It works using
+Amazon Linux 2 AMI.
+
+<h2>Security Group</h2>
+The fundamental of network security in AWS. They control how traffic is allowed 
+into or out of our EC2 Machines. They are like the firewall for EC2 instances.
+
+![diagram](sec_group.JPG)
+
+Inbound rules are used to control traffic coming in and outbound traffic is
+used to define the traffic going out of the machine.
+
+Security groups can be attached to multiple instances. They're locked to region
+/VPC combination. It lives outside of the EC2 instance, so traffic that is blocked
+is not visible in the EC2 instance.
+
+**It's good to maintain one separate security group for SSH access.**
+
+If you get a timeout when trying to connect, then it's a security group issue.
+
+If you get a "connection refused" error, then it's an application error or it's
+not launched.
+
+By default all inbound traffic is blocked and all outbound traffic is allowed.
+
+Security groups can be referenced from other security groups. This can be used
+to allow other EC2 instances to connect to another EC2 instance without dealing
+with IPs.
