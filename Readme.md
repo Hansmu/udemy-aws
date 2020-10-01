@@ -103,3 +103,15 @@ By default all inbound traffic is blocked and all outbound traffic is allowed.
 Security groups can be referenced from other security groups. This can be used
 to allow other EC2 instances to connect to another EC2 instance without dealing
 with IPs.
+
+<h2>EC2 User Data</h2>
+EC2 user data scripts can be used to bootstrap our instances. That is launching
+commands when a machine starts. The script is run only once at the instance
+first start. It runs with the sudo rights.
+EC2 user data is used to automate boot tasks such as:
+* Installing updates
+* Installing software
+* Downloading common files from the internet
+* Anything you can think of
+
+Under `Configure details` you can find `User data` under `Advanced details`.
