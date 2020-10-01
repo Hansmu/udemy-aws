@@ -115,3 +115,83 @@ EC2 user data is used to automate boot tasks such as:
 * Anything you can think of
 
 Under `Configure details` you can find `User data` under `Advanced details`.
+
+<h2>EC2 Instance Launch Types</h2>
+**On demand instances - short workload, predictable pricing. Great for elastic
+workloads. That is a system that's able to adapt to the required workload.**
+* Pay for what you use (billing per second, after the first minute)
+* Has the highest cost but no upfront payment
+* No long term commitment
+* Recommended for short-term and un-interrupted workloads, where you 
+can't predict how the application will behave.
+
+**Reserved (Minimum 1 year) - closer to regular IT.**
+
+**Reserved instances - long workloads**
+* Up to 75% discount compared to On-demand.
+* Pay upfront for what you use with long term commitment.
+* Reservation period can be 1 or 3 years.
+* Reserve a specific instance type.
+* Recommended for steady state usage applications (think database).
+
+**Convertible reserved instances: long workloads with flexible instances**
+* Can change the EC2 instance type
+* Up to 54% discount
+
+**Scheduled reserved instances: example - every Thursday between 3 and 6 PM**
+* launch within time window you reserve
+* when you require a fraction of day / week / month
+
+**Spot instances - short workloads, for cheap, can lose instances (less reliable)**
+* Can get a discount of up to 90% compared to On-demand
+* Instances that you can lose at any point of time if your max price is less
+than the current spot price.
+* The MOST cost-efficient instances in AWS
+* Useful for workloads that are resilient to failure. Ex: batch jobs,
+data analysis, image processing
+* Not great for critical jobs or databases
+
+**Great combo: Reserved instances for baseline + On-Demand & Spot
+(based on failure resilience) for peaks**
+
+**Dedicated instances - no other customers will share your hardware**
+* Instances running on hardware that's dedicated to you
+* May share hardware with other instances in same account
+* No control over instance placement (can move hardware after Stop / Start)
+
+**Dedicated hosts - book an entire physical server, control instance placement**
+* Physical dedicated EC2 server for your use
+* Full control of EC2 instance placement
+* Visibility into the underlying sockets / physical cores of the hardware
+* Allocated for your account for a 3 year period reservation
+* More expensive
+* Useful for software that have complicated licensing model.
+* Or for companies that have strong regulatory or compliance needs. That is,
+cannot share hardware with other customers.
+
+**Which host is right for me?**
+* On demand - coming and staying in resort whenever we like, we pay the full
+price.
+* Reserved - like planning ahead and if we plant to stay for a long time, we
+may get a good discount.
+* Spot instances - the hotel allows people to bid for the empty rooms and the
+highest bidder keeps the rooms. You can get kicked out at any time.
+* Dedicated hosts - we book an entire building of the resort.
+
+Price Comparison
+Example – m4.large – us-east-1
+
+| Price Type  | Price (per hour)  |
+|---|---|
+|On-demand   | $0.10  |
+|Spot Instance (Spot Price) | $0.032 - $0.045 (up to 90% off)|
+| Spot Instance (Spot Price) | $0.032 - $0.045 (up to 90% off) |
+| Spot Block (1 to 6 hours) | ~ Spot Price |
+| Reserved Instance (12 months) – no upfront | $0.062 |
+| Reserved Instance (12 months) – all upfront | $0.058 |
+| Reserved Instance (36 months) – no upfront | $0.043 |
+| Reserved Convertible Instance (12 months) – no upfront | $0.071 |
+| Reserved Dedicated Instance (12 months) – all upfront | $0.064 |
+| Reserved Scheduled Instance (recurring schedule on 12 months term) | $0.090 – $0.095 (5%-10% off) |
+| Dedicated Host | On-demand price |
+| Dedicated Host Reservation | Up to 70% off |
