@@ -150,6 +150,9 @@ than the current spot price.
 * Useful for workloads that are resilient to failure. Ex: batch jobs,
 data analysis, image processing
 * Not great for critical jobs or databases
+* You specify the maximum price that you are willing to pay. When you reserve
+then you'll be paying the current price and your spot will be kept as long as
+the current price remains under your set maximum price.
 
 **Great combo: Reserved instances for baseline + On-Demand & Spot
 (based on failure resilience) for peaks**
@@ -185,7 +188,6 @@ Example – m4.large – us-east-1
 |---|---|
 |On-demand   | $0.10  |
 |Spot Instance (Spot Price) | $0.032 - $0.045 (up to 90% off)|
-| Spot Instance (Spot Price) | $0.032 - $0.045 (up to 90% off) |
 | Spot Block (1 to 6 hours) | ~ Spot Price |
 | Reserved Instance (12 months) – no upfront | $0.062 |
 | Reserved Instance (12 months) – all upfront | $0.058 |
