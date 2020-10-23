@@ -229,3 +229,19 @@ to the internet</i>). It's what gives EC2 instances access to the network.
 for failover. That is, you can move that private IPv4 over to another EC2
 instances so that the system would start using that instead of the failing one.
 * They're bound to specific availability zones.
+
+<h2> Scalability & High Availability </h2>
+
+* Scalability means that an application / system can handle greater loads by
+adapting.
+* There are two kinds of scalability:
+    * Vertical scalability - increasing the size of the instance. For example
+    running on t2.micro and then changing to t2.large.RDS, ElastiCache are services
+    that can scale vertically. There's a hardware limit how much you can 
+    vertically scale. Common for a non-distributed system, ex. database.
+    * Horizontal scalability (=elasticity) - increasing the number of instances
+    / systems for your application. Used for distributed systems. Common for
+    web applications / modern applications. 
+* Scalability is linked but different to High Availability.
+* High availability means running your application / system in at least 2 data 
+centers (= Availability Zones). The goal is to survive a data center loss.
