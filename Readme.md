@@ -60,15 +60,29 @@ It consists of:
 
 The first part of creating an image is choosing an operating system for the machine.
 Amazon Linux comes with a lot of Amazon features and it's kind of the way that 
-Amazon imagines you using the services, so it's a good place to start.
+Amazon imagines you using the services, so it's a good place to start. 
+Additionally, custom images can be used. AMI are built for a specific AWS
+region.
 
 Then you have to select the type, which means how powerful your machine should be.
+Different instances are specialized for different things. R/C/P/G/H/X/I/F/Z/CR 
+are specialized in RAM, CPU, I/O, Network, and/or GPU. M instance types are
+balanced. So they do everything decently, but doesn't excel at anything.
+T2/T3 instance types are "burstable". Burstable means that the instance has
+OK CPU performance, but when it needs to process something unexpected (a 
+spike in load for example), it can burst, and the CPU can be VERY good.
+If the machine bursts, it utilizes "burst credits". If all the credits are gone,
+then the CPU becomes BDA. If the machine stops bursting, credits are accumulated
+over time. If your instance consistenly runs low on credit, you need to move
+to a different kind of non-burstable instance. T2 unlimited can be used for 
+unlimited burst credit balance, but you pay extra for going over the credit 
+balance.
 
 Tags can be added to make identifying the instance easier.
 
 With EC2 connect behind the scenes AWS will generate a key to connect to 
 it temporarily. If SSH is turned off, then it won't work. It works using
-Amazon Linux 2 AMI.
+Amazon Linux 2 AMI (Amazon Machine Images).
 
 Elastic IP can be used to give an EC2 machine a static IP. It can be attached
 to a single machine at a time. By default the EC2 IP can change with each 
@@ -180,6 +194,8 @@ may get a good discount.
 * Spot instances - the hotel allows people to bid for the empty rooms and the
 highest bidder keeps the rooms. You can get kicked out at any time.
 * Dedicated hosts - we book an entire building of the resort.
+
+You do not pay for an instance, if that instance is stopped.
 
 Price Comparison
 Example – m4.large – us-east-1
