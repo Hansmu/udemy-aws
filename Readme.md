@@ -197,3 +197,19 @@ Example – m4.large – us-east-1
 | Reserved Scheduled Instance (recurring schedule on 12 months term) | $0.090 – $0.095 (5%-10% off) |
 | Dedicated Host | On-demand price |
 | Dedicated Host Reservation | Up to 70% off |
+
+**Elastic Network Interfaces (ENI)**
+* Logical component in a VPC (<i>Virtual Private Cloud. Just a network that 
+you have on the cloud</i>) that represents a virtual network card
+(<i>Network card is a piece of hardware that the computer uses to connect 
+to the internet</i>). It's what gives EC2 instances access to the network.
+* The ENI can have the following attributes:
+    * Primary private IPv4, one or more secondary IPv4
+    * One Elastic IP(IPv4) per private IPv4
+    * One Public IPv4
+    * One or more security groups
+    * A MAC address
+* ENI can be created independently and attach them on the fly on EC2 instances
+for failover. That is, you can move that private IPv4 over to another EC2
+instances so that the system would start using that instead of the failing one.
+* They're bound to specific availability zones.
