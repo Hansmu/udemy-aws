@@ -245,3 +245,52 @@ adapting.
 * Scalability is linked but different to High Availability.
 * High availability means running your application / system in at least 2 data 
 centers (= Availability Zones). The goal is to survive a data center loss.
+
+<h4>Load balancing</h4>
+Load balances are servers that forward internet traffic to multiple servers
+(EC2 Instances) downstream. It does regular health checks to your instance.
+It provides high availability across zones. It cleanly separates public
+traffic from private traffic.
+
+The reasons for using an EC2 Load Balancer are:
+* An ELB (EC2 Load Balancer) is a managed load balancer, which means
+    * AWS guarantees that it will be working
+    * AWS takes care of upgrades, maintenance, high availability
+    * AWS provides only a few configuration knobs
+* It costs less to setup your own load balancer, but it will be a lot more
+effort on your end.
+* It is integrated with many AWS offerings/services.
+
+The health checks are run on a specific port and route. (/health is common)
+If the response is not 200, then the instance is deemed unhealthy.
+
+AWS has 3 kinds of managed Load Balancers
+* Classic Load Balancer (v1 - old generation) - 2009
+    * HTTP, HTTPS (Layer 7), TCP (Layer 4)
+    * Health checks are TCP or HTTP based
+    * Fixed hostname XXX.region.elb.amazonaws.com
+* Application Load Balancer (v2 - new generation) - 2016
+    * HTTP, HTTPS, WebSocket
+* Network Load Balancer (v2 - new generation) - 2017
+    * TCP, TLS (secure TCP), UDP
+* Overall it's better to use V2 as they provide newer features.
+* You can setup interval(private) or external(public) ELBs.
+
+
+The source references the load balancer security group ID.
+![diagram](load_balance_setup.JPG)
+
+Load balancer good to know
+* LBs can scale but not instantaneously - contact AWS for a "warm-up"
+* Troubleshooting
+    * 4xx errors are client induced errors
+    * 5xx errors are application induced errors
+    * Load Balancer Errors 503 means at capacity or no registered target
+    * If the LB can't connect to your application, check your security groups
+* Monitoring
+    * ELB access logs will log all access requests
+    * CloudWatch Metrics will give you aggregate statistics
+
+With the load balancer, you'd turn off access to your EC2 access directly.
+So HTTP traffic would only be allowed if it's coming from the ELB and not
+directly from the client.
