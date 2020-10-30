@@ -270,7 +270,17 @@ AWS has 3 kinds of managed Load Balancers
     * Health checks are TCP or HTTP based
     * Fixed hostname XXX.region.elb.amazonaws.com
 * Application Load Balancer (v2 - new generation) - 2016
-    * HTTP, HTTPS, WebSocket
+    * HTTP, HTTPS, WebSocket (Layer 7)
+    * Load balancing to multiple HTTP applications across machines (target groups)
+    * Load balancing to multiple applications on the same machine (ex. containers)
+    * Support redirects (from HTTP to HTTPS for example)
+    * Routing tables to different target groups:
+        * Routing based on path in URL (example.com/**users** and example.com/**posts**)
+        * Routing based on hostname in URL (**one.example.com** and **other.example.com**)
+        * Routing based on query string, headers (example.com/users?**id=123&order=false**)
+    * ALB is a great fit for micro services & container based applications (ex. Docker and Amazon ECS)
+    * Has a port mapping feature to redirect to a dynamic port in ECS.
+    * Can control where traffic goes from the `Listeners` tab.
 * Network Load Balancer (v2 - new generation) - 2017
     * TCP, TLS (secure TCP), UDP
 * Overall it's better to use V2 as they provide newer features.
@@ -280,7 +290,7 @@ AWS has 3 kinds of managed Load Balancers
 The source references the load balancer security group ID.
 ![diagram](load_balance_setup.JPG)
 
-Load balancer good to know
+**Load balancer good to know**
 * LBs can scale but not instantaneously - contact AWS for a "warm-up"
 * Troubleshooting
     * 4xx errors are client induced errors
@@ -294,3 +304,16 @@ Load balancer good to know
 With the load balancer, you'd turn off access to your EC2 access directly.
 So HTTP traffic would only be allowed if it's coming from the ELB and not
 directly from the client.
+
+**Application load balance (v2) target groups**
+* EC2 instances (can be managed by an Auto Scaling Group) - HTTP
+* ECS tasks (managed by ECS itself) - HTTP
+* Lambda functions - HTTP request is translated into a JSON event
+* IP Addresses - must be private IPs
+* Health checks are at the target group level
+
+**ALB v2 good to know**
+* Fixed hostname (XXX.region.elb.amazonaws.com)
+* The application servers don't see the IP of the client directly
+    * The true IP of the client is inserted in the header X-Forwarded-For
+    * We can also get Port (X-Forwarded-Port) and protocol (X-Forwarded-Proto)
