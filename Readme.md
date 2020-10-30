@@ -282,7 +282,16 @@ AWS has 3 kinds of managed Load Balancers
     * Has a port mapping feature to redirect to a dynamic port in ECS.
     * Can control where traffic goes from the `Listeners` tab.
 * Network Load Balancer (v2 - new generation) - 2017
-    * TCP, TLS (secure TCP), UDP
+    * TCP, TLS (secure TCP), UDP (Layer 4)
+        * Forward TCP & UDP traffic to your instances
+        * Handle millions of requests per second. Higher performance than ALB.
+        * Less latency ~100 ms (vs 400 ms for ALB)
+    * NLB has one static IP per AZ, and supports assigning Elastic IP (helpful for 
+    whitelisting specific IP). ALB and CLB do not have a static IP.
+    * NLB are used for extreme performance/TCP or UDP traffic.
+    * Not included in the AWS free tier
+    * With NLBs, the instances do not see traffic coming from the NLB, but they see it as
+    coming from the outside. Have to add a rule to allow TCP traffic from anywhere.
 * Overall it's better to use V2 as they provide newer features.
 * You can setup interval(private) or external(public) ELBs.
 
