@@ -343,3 +343,32 @@ EC2 you get stuck on. It then has an expiration time, after which a new EC2 inst
 * CLB - disabled by default, no charges for inter AZ data if enabled
 * ALB - always on (can't be disabled), no charges for inter AZ data
 * NLB - disabled by default, you pay charges for inter AZ data if enabled
+
+**SSL certificates**
+* SSL/TLS basics
+    * An SSL certificate allows traffic between your clients and your load balancer to be
+    encrypted in transit (in-flight encryption)
+    * SSL refers to Secure Sockets Layer, used to encrypt connections
+    * TLS refers to Transport Layer Security, which is a newer version
+    * Nowadays, TLS certificates are mainly used, but people still refer as SSL
+    * Public SSL certificates are issued by Certificate Authorities (CA)
+    * SSL certificates have an expiration date (you set) and must be renewed
+    ![diagram](ssl_over_lb.JPG)
+    * The load balancer uses an X.509 certificate (SSL/TLS server certificate)
+    * You can manage certificates using ACM (AWS Certificate Manager)
+    * You can upload your own certificates to ACM alternatively
+    * When you set up a HTTPS listener, then:
+        * You must specify a default certificate
+        * You can add an optional list of certs to support multiple domains
+        * Clients can use SNI (Server Name Indication) to specify the hostname they reach.
+        * Ability to specify a security policy to support older versions of SSL / TLS (legacy clients)
+* SNI
+    * SNI solves the problem of loading multiple SSL certificates onto one web server 
+    (to serve multiple websites)    
+    * It's a newer protocol, and requires the client to indicate the hostname of the target
+    server in the initial SSL handshake
+    * The server will then find the correct certificate, or return the default one
+    * Only works for ALB & NLB (newer generation), CloudFront
+    ![diagram](sni-example.JPG)
+* You can setup SSL under listeners under load balancers. You specify HTTPS, cipher, which is
+the protocols we want to support, and then setup the certificate.
