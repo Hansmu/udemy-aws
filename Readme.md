@@ -326,3 +326,14 @@ directly from the client.
 * The application servers don't see the IP of the client directly
     * The true IP of the client is inserted in the header X-Forwarded-For
     * We can also get Port (X-Forwarded-Port) and protocol (X-Forwarded-Proto)
+    
+**Load balancer stickiness**
+* It is possible to implement stickiness so that the same client is always redirected to
+the same instance behind a load balancer
+* Works for CLB and ALB
+* Uses a cookie for this. The cookie has an expiration date you control
+* Use case: make sure the user doesn't lose his session data
+* Enabling stickiness may bring imbalance to the load over the backend EC2 instances
+* It can be set under `Load Balancing -> Target Groups -> Attributes -> Stickiness`
+* When you access the site, then the first request that reaches an EC2 instance decides which
+EC2 you get stuck on. It then has an expiration time, after which a new EC2 instance is chosen.
