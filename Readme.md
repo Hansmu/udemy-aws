@@ -337,3 +337,9 @@ the same instance behind a load balancer
 * It can be set under `Load Balancing -> Target Groups -> Attributes -> Stickiness`
 * When you access the site, then the first request that reaches an EC2 instance decides which
 EC2 you get stuck on. It then has an expiration time, after which a new EC2 instance is chosen.
+
+**Cross-zone load balancing**
+![diagram](cross-zone.JPG)
+* CLB - disabled by default, no charges for inter AZ data if enabled
+* ALB - always on (can't be disabled), no charges for inter AZ data
+* NLB - disabled by default, you pay charges for inter AZ data if enabled
