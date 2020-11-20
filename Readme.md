@@ -372,3 +372,16 @@ EC2 you get stuck on. It then has an expiration time, after which a new EC2 inst
     ![diagram](sni-example.JPG)
 * You can setup SSL under listeners under load balancers. You specify HTTPS, cipher, which is
 the protocols we want to support, and then setup the certificate.
+
+**ELB - Connection Draining**
+* Feature naming:
+    * For CLBs: Connection draining
+    * For ALBs and NLBs: Target Group: Deregistration delay
+* It is the time to complete 'in-flight requests' while the instance is de-registering or 
+unhealthy. That is it waits for existing connections to complete. The default is 300 seconds.
+* When the instance is in deregistring mode then the load balancer stops sending new requests
+to the instance which is deregistring.
+* Between 1 to 3600 seconds, default is 300 seconds. Can be disabled by setting it to 0.
+* Set to a low value if your requests are short. E.g. you don't expect any request to last more
+than 20 seconds, then set it to 20 seconds.
+![diagram](connection-draining.JPG)
