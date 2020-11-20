@@ -385,3 +385,48 @@ to the instance which is deregistring.
 * Set to a low value if your requests are short. E.g. you don't expect any request to last more
 than 20 seconds, then set it to 20 seconds.
 ![diagram](connection-draining.JPG)
+
+**Auto scaling groups (ASB)**
+* In real-life, the load on your websites and applications can change.
+* The goal of an Auto Scaling Group (ASG) is to:
+    * Scale out (add EC2 instances) to match an increased load.
+    * Scale in(remove EC2 instances) to match a decreased load.
+    * Ensure we have a minimum and a maximum number of machines running. The point being that
+    it wouldn't scale too high or too low, so you set an upper and lower limit to how many machines
+    should/can be run.
+    * Automatically register new instances to a load balancer.
+* ASGs have the following attributes:
+    * A launch configuration:
+        * AMI + Instance type
+        * EC2 User Data
+        * EBS Volumes
+        * Security Groups
+        * SSH Key Pair
+    * Min size / Max size / Initial capacity
+    * Network + subnets information
+    * Load balancer information
+    * Scaling policies
+* It is possible to scale an ASG based on CloudWatch alarms.
+* An alarm monitors a metric (such as Average CPU)
+* Metrics are computed for the overall ASG instances.
+* Based on the alarm:
+    * We can create scale-out policies (increase the number of instances)
+    * We can create scale-in policies (decrease the number of instances)
+* With the new ASGs you can define "better" auto scaling rules that are directly managed
+by EC2. These are the new rules. They're better in the sense that they are easier to set 
+up and can make more sense.
+    * Target average CPU usage
+    * Number of requests on the ELB per instance
+    * Average network in
+    * Average network out
+* We can auto scale based on a custom metric (ex. number of connected users, users' schedule)
+    1) We send our custom metric from application on EC2 to CloudWatch (PutMetric API)
+    2) Create CloudWatch alarm to react to low/high values
+    3) Use the CloudWatch alarm as the scaling policy for ASG 
+* ASGs use launch configurations or launch templates (newer)
+* To update an ASG, you must provide a new launch configuration/launch template
+* IAM roles attached to an ASG will get assigned to EC2 instances
+* ASGs are free. You pay for the underlying resources being launched
+* Having instances under an ASG means that if they get terminated for whatever reason, then
+the ASG will automatically create new ones for replacement, providing extra safety.
+* ASG can terminate instances marked as unhealthy by a load balancer (and hence replace them)
