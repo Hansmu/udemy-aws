@@ -326,6 +326,12 @@ directly from the client.
 * The application servers don't see the IP of the client directly
     * The true IP of the client is inserted in the header X-Forwarded-For
     * We can also get Port (X-Forwarded-Port) and protocol (X-Forwarded-Proto)
+
+**ALB Configuring**
+1) Open EC2 configuration, go into load balancers, select Application Load Balancer.
+2) Configure the generic information, then select the AZs you want it to work in.
+3) Check your target group after configuring to make sure instances are there. Target group
+defines the instances that it applies to.
     
 **Load balancer stickiness**
 * It is possible to implement stickiness so that the same client is always redirected to
@@ -430,3 +436,29 @@ up and can make more sense.
 * Having instances under an ASG means that if they get terminated for whatever reason, then
 the ASG will automatically create new ones for replacement, providing extra safety.
 * ASG can terminate instances marked as unhealthy by a load balancer (and hence replace them)
+
+**ASG - Scaling Policies**
+* Target tracking scaling
+    * Most simple and easy to set up
+    * Example: I want the average ASG CPU to stay at around 40%
+* Simple/Step scaling
+    * When a CloudWatch alarm is triggered (example CPU > 70%), then add 2 units
+    * When a CloudWatch alarm is triggered (example CPU < 30%), then remove 1 unit
+* Scheduled Actions
+    * Anticipate a scaling based on known usage patterns
+    * Example: increase the min capacity to 10 at 5 pm on Fridays
+    
+**ASG - Scaling Cooldowns**
+* The cooldown period helps to ensure that your Auto Scaling Group doesn't launch or
+terminate additional instances before the previous scaling activity takes effect
+* In addition to default cooldown for Auto Scaling Group, we can create cooldowns
+that apply to a specific simple scaling policy
+* A scaling-specific cooldown period overrides the default cooldown period.
+* One common use for scaling-specific cooldowns is with a scale-in policy - a policy that
+terminates instances based on a specific criteria or metric. Because this policy terminates
+instances, Amazon EC2 Auto Scaling needs less time to determine whether to terminate additional
+instances.
+* If the default cooldown period of 300 seconds is too long - you can reduce costs by 
+applying a scaling-specific cooldown period of 180 seconds to the scale-in policy
+* If your application is scaling up and down multiple times each hour, modify the ASG
+cooldown timers and the CloudWatch alarm period that triggeres the scale in.
