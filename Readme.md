@@ -462,3 +462,39 @@ instances.
 applying a scaling-specific cooldown period of 180 seconds to the scale-in policy
 * If your application is scaling up and down multiple times each hour, modify the ASG
 cooldown timers and the CloudWatch alarm period that triggeres the scale in.
+
+**EBS(Elastic Block Store) Volume**
+* An EC2 machine loses its root volume(main drive) when it is manually terminated
+* Unexpected terminations might happen from time to time (AWS would email you)
+* Sometimes, you need a way to store your instance data somewhere
+* An EBS (Elastic Block Store) Volume is a network drive you can attach to your instances
+while they run.
+* It allows your instances to persist data. E.g. database data.
+* It's a network drive (i.e. not a physical drive)
+    * It uses the network to communicate to the instance, which means there might be a bit
+    of latency
+    * It can be detached from an EC2 instance and attached to another one quickly.
+* It's locked to an Availability Zone(AZ)
+    * An EBS Volume in us-east-1a cannot be attached to us-east-1b
+    * To move a volume across, you first need to snapshot it
+* Have a provisioned capacity (size in GBs, and IOPS)
+    * You get billed for all the provisioned capacity, not the amount you actually use.
+    * You can increase the capacity of the drive over time, so it's a good idea to start
+    small and increase the capacity as you need it.
+* EBS Volumes come in 4 types
+    * GP2 (SSD): General purpose SSD volume that balances price and performance for a 
+    wide variety of workloads.
+    * IO1 (SSD): Highest-performance SSD volume for mission-critical low-latency or
+    high-throughput workloads.
+    * STI (HDD): Low cost HDD volume designed for frequently accessed, throughput-intensive
+    workloads.
+    * SCI (HDD): Lowest cost HDD volume designed for less frequently accessed workloads.
+* EBS Volumes are characterized in Size | Throughput | IOPS (I/O Ops Per Sec)
+* When in doubt always consult the AWS documentation.
+* When you create an instance, then only GP2 and IO1 can be used as boot volumes
+
+When you create an instance, then currently "Step 4: Add Storage" is where you can add an
+EBS volume. Can select a snapshot you want to restore from.
+
+Have to make the volume manually available. So have to mount it in the instance. AWS
+has a guide on how to do that.
