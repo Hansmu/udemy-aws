@@ -1,4 +1,6 @@
 <h2>AWS Regions</h2>
+Region (us-east-1) -> Availability Zones (us-east-1a, us-east-1b)
+
 AWS has regions all around the world. It's just what it says, a region somewhere in the world.
 Ex us-east-1. Each region has their own data. So data that's stored in one region
 doesn't automatically become accessible in another region.
@@ -8,13 +10,21 @@ a physical data center in the region. But they're physically separate from one a
 minimize threat from physical damage. Ex. disasters. They are still connected
 with each other with a high bandwidth, ultra-low latency network.
 
-AWS Consoles are region scoped (except IAM and S3). When you perform an action it will be 
-performed in the specific region. Choose the closest region to you.
+AWS Consoles are region scoped (except IAM, Route 53, Cloudfront, WAF). When you perform an action 
+it will be performed in the specific region.
+
+Choosing an AWS region:
+* **Compliance with data governance and legal requirements**: e.g. data never leaves a region
+without explicit permission
+* **Proximity** to customers: reduced latency
+* **Available services** within a region: new services and new features aren't available in 
+every region.
+* **Pricing**: pricing varies region to region and is transparent in the service pricing page
 
 <h2>IAM (Identity and Access Management)</h2>
 This is where the AWS security is.
-* Users
-* Groups
+* Users - physical people
+* Groups - made up of users. Users can belong to multiple groups.
 * Roles
 
 Root account should never be used (and shared). Only use it for the very first time to
@@ -28,6 +38,8 @@ or something similar.
 Policies are defined as JSON for those above entities. It defines what each of the above
 can and cannot do. It's always good to give the users the minimal amount of permissions
 they need to perform their job (least privilege principles).
+
+![diagram](iam_policy.PNG)
 
 Multi factor authentication can be setup. Additionally there are predefined policies, that 
 can be used.
@@ -49,6 +61,26 @@ The users are put into groups from which they extend permissions.
 
 IAM password policy can be applied to make sure that the users create strong 
 passwords.
+
+To access AWS, you have three options:
+* AWS Management Console: protected by password + MFA
+* AWS Command Line Interface (CLI): protected by access keys
+* AWS Software Developer Kit (SDK) - for code: protected by access keys
+
+AWS CloudShell is a terminal inside of AWS, that's essentially CLI, but in the browser. All the files
+that you create inside CloudShell will be kept between sessions.
+
+Access Advisor can be used to check what services have been used and so it helps in deciding how many
+privileges do you actually need.
+
+**IAM Section - Summary**
+* Users: mapped to a physical user, has a password for AWS console
+* Groups: contains users only
+* Policies: JSON document that outlines permissions for users or groups
+* Roles: for EC2 instances or AWS services
+* Security: MFA + Password policy
+* Access keys: access AWS using the CLI or SDK
+* Audi: IAM Credential reports & IAM Access advisor
 
 <h2>EC2</h2>
 
