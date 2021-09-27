@@ -90,6 +90,17 @@ It consists of:
 * Distributing load across machines (ELB)
 * Scaling the services using an auto-scaling group (ASG)
 
+EC2 sizing & configuration options
+* Operating system
+* How much compute power & cores (CPU)
+* How much random-access memory (RAM)
+* How much storage space:
+  * Network-attached (EBS & EFS)
+  * Hardware (EC2 instance store)
+* Network card: speed of the card, public IP address
+* Firewall rules: security group
+* Bootstrap script (only runs on first ever launch): EC2 user data
+
 The first part of creating an image is choosing an operating system for the machine.
 Amazon Linux comes with a lot of Amazon features and it's kind of the way that 
 Amazon imagines you using the services, so it's a good place to start. 
@@ -109,6 +120,8 @@ over time. If your instance consistenly runs low on credit, you need to move
 to a different kind of non-burstable instance. T2 unlimited can be used for 
 unlimited burst credit balance, but you pay extra for going over the credit 
 balance.
+
+![diagram](instance_naming.PNG)
 
 Tags can be added to make identifying the instance easier.
 
@@ -150,6 +163,13 @@ Security groups can be referenced from other security groups. This can be used
 to allow other EC2 instances to connect to another EC2 instance without dealing
 with IPs.
 
+![diagram](security_policy_firewall.PNG)
+
+**Never enter your access keys into an EC2 instance as someone else could retrieve
+them from it. Instead, use IAM roles.**
+
+![diagram](modify-iam.PNG)
+
 <h2>EC2 User Data</h2>
 EC2 user data scripts can be used to bootstrap our instances. That is launching
 commands when a machine starts. The script is run only once at the instance
@@ -184,7 +204,7 @@ can't predict how the application will behave.
 * Can change the EC2 instance type
 * Up to 54% discount
 
-**Scheduled reserved instances: example - every Thursday between 3 and 6 PM**
+**Scheduled reserved instances (deprecated): example - every Thursday between 3 and 6 PM**
 * launch within time window you reserve
 * when you require a fraction of day / week / month
 
