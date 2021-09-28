@@ -646,7 +646,7 @@ your data well, it might be cheaper.
 Have to mount it and once you create a file into the mounted location, then it'll be shared
 between the instances.
   
-EBS vs EFS
+**EBS vs EFS**
 * EBS
     * Can be attached to only one instance at a time
     * Are locked at the Availability Zone (AZ) level
@@ -665,4 +665,6 @@ EBS vs EFS
     * Only for Linux Instances
     * EFS has a higher price point than EBS
     * Can leverage EFS-IA for cost saving
+* Instance store can be used to get massive IO, but you need a replication mechanism if you want
+  persistence. 
 * The choice is: EFS vs EBS vs Instance store
