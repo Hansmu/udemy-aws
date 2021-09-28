@@ -515,6 +515,8 @@ applying a scaling-specific cooldown period of 180 seconds to the scale-in polic
 * If your application is scaling up and down multiple times each hour, modify the ASG
 cooldown timers and the CloudWatch alarm period that triggeres the scale in.
 
+<h2>EC2 instance storage</h2>
+
 **EBS(Elastic Block Store) Volume**
 * An EC2 machine loses its root volume(main drive) when it is manually terminated
 * Unexpected terminations might happen from time to time (AWS would email you)
@@ -550,3 +552,36 @@ EBS volume. Can select a snapshot you want to restore from.
 
 Have to make the volume manually available. So have to mount it in the instance. AWS
 has a guide on how to do that.
+
+EBS snapshots
+* Make a backup (snapshot) of your EBS volume at a point in time
+* Not necessary to detach volume to do snapshot, but recommended
+* Can copy snapshots across AZ or Region
+
+![diagram](snapshot-restore.PNG)
+
+AMI (Amazon Machine Image)
+* AMI is a customization of an EC2 instance
+  * You add your own software, configuration, operating system, monitoring etc.
+  * Faster boot/configuration time because all your software is pre-packaged
+* AMI is built for a specific region (and can be copied across regions)
+* You can launch EC2 instances from:
+  * A public AMI: AWS provided
+  * Your own AMI: you make and maintain them yourself
+  * An AWS marketplace AMI: an AMI someone else made (and potentially sells)
+
+AMI process
+* Start an EC2 instance and customize it
+* Stop the instance (for data integrity)
+* Build an AMI - this will also create EBS snapshots
+* Launch instances from other AMIs
+
+![diagram](ami-copy.PNG)
+
+EC2 instance store
+* EBS volumes are network drives with good but "limited" performance
+* If you need a high performance hardware disc, use an EC2 instance store
+  * Better I/O performance
+  * Cleared after EC2 instance stopped (ephemeral)
+  * Good for buffer/cache/scratch data/temporary content
+  * Risk of data loss if hardware fails
