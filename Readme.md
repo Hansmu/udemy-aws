@@ -1116,3 +1116,128 @@ and AWS. The connection is private, secure, and fast. It goes over a private
 * Site-to-site VPN and DX cannot access VPC endpoints
 * Typical 3-tier solution architecture
   ![diagram](typical-3-tier.JPG)
+  
+<h2>S3</h2>
+* Stores objects (files) into 'buckets' (directories)
+* Buckets must have globally unique names
+* Buckets are defined at the region level
+* Naming convention
+    * No uppercase
+    * No underscore
+    * 3-63 characters long
+    * Not an IP
+    * Must start with lowercase letter or number
+* Files have keys. The key is the full path inside the bucket.
+* The key is composed of a prefix + object name.
+  ![diagram](prefix-and-object.JPG)
+* There's no concept of directories within buckets, just keys with very
+long names that contain slashes
+* Object values are the content of the body, max object size is 5 TB
+    * If uploading more than 5GB, must use 'multi-part upload'
+* Each file can have metadata (list of text key/value pairs - system or
+  user metadata)
+* Each file can have tags (unicode key/value pair - up to 10) - useful for
+security/lifecycle
+* Version ID (if versioning is enabled)
+    * Versioning is enabled on the bucket level
+    * Best practice to version your buckets
+        * Protect against unintended deletes (ability to restore a version).
+          When you delete, then a delete marker will be added, but if you 
+          toggle list versions, then you'll see all of the previous versions
+          with the delete marker at the top. You can delete the delete marker
+          to undelete the file.
+        * Easy roll back to previous version
+    * Notes:
+        * Any file that is not versioned prior to enabling versioning will
+          have version 'null'. If we upload a new one, then the 'null' version
+          will still be considered the initial version.
+        * Suspending versioning does not delete the previous versions
+        * If you have list versions toggled and then you delete, then the
+        files will be permanently deleted.
+* Encryption of objects
+    * Encryption can be used on a file basis or on the entire bucket
+    * SSE-S3: encrypts S3 objects using keys handled & managed by AWS
+        * Encryption using keys handled & managed by Amazon S3
+        * Object is encrypted server side. Which is why it's called SSE,
+        meaning server side encryption
+        * AES-256 encryption type
+        * Must set header 'x-amz-server-side-encryption': 'AES256'
+    * SSE-KMS: leverage AWS key management service to manage encryption keys
+        * Advantage is user control over who sees what keys + audit trail
+        * Object is encrypted server side
+        * Must set header 'x-amz-server-side-encryption': 'aws:kms'
+    * SSE-C: when you want to manage your own encryption keys
+        * You provide the keys outside of AWS
+        * S3 does not store the encryption key you provide
+        * HTTPS must be used
+        * Encryption key must be provided in the HTTP headers, for every 
+        HTTP request made
+    * Client side encryption
+        * You perform the encryption and then send it to S3
+        * Client library such as the Amazon S3 Encryption Client can be used
+        * Clients must decrypt data themselves when retrieving from S3
+        * Customer fully manages the keys and encryption cycle
+* S3 security
+    * User based - IAM policies attached to users define which API calls
+    should be allowed for a specific user from the IAM console
+    * Resource based
+        * Bucket policies - bucket wide rules from the S3 console - allows
+        cross account access
+        * Object access control list (ACL) - finer grain, set on the object
+        level the access rule
+        * Bucket access control list (ACL) - less common
+    * Note: an IAM principal (user/application) can access an S3 object if
+        * the user IAM permissions allow it or the resource policy allows it
+        and there is no explicit deny
+    * S3 bucket policies
+        * JSON based policies
+          ![diagram](iam_policy.PNG)
+        * Explicit DENY in an IAM policy will take precedence over a bucket
+          policy permission
+        * Use S3 bucket policies to
+            * Grant public access to the bucket
+            * Force objects to be encrypted at upload
+            * Grant access to another account (Cross account)
+    * Bucket settings for Block Public Access
+        * Block public access to buckets and objects granted through
+            * new access control lists (ACLs)
+            * any access control lists (ACLs)
+            * new public bucket or access point policies
+        * Block public and cross-account access to buckets and objects through
+        any public bucket or access point policies
+        * If you know your bucket should never be public, leave these on
+        * Can be set at the account level
+    * Can access S3 buckets in private VPCs using VPC endpoints
+    * S3 access logs can be used for logging and audit
+    * API calls can be logged in AWS CloudTrail
+    * MFA Delete: MFA can be required in versioned buckets to delete objects
+    * Pre-signed URLs: URLs that are valid only for a limited time (ex. 
+      premium video download service for logged in users)
+* S3 can host static websites and have them accessible on the WWW
+* If you get a 403 (Forbidden) error, make sure the bucket policy allows
+public reads!
+* As of December 2020 S3 is strongly consistent. That means that whenever 
+you modify the data and do a read afterwards, then you're going to see the
+correct results.
+  
+**CORS**
+* An origin is a scheme (protocol), host (domain) and port
+    * E.g. https://www.example.com (implied port is 443 for HTTPS, 80 for HTTP)
+        * Scheme: HTTPS
+        * Host: www.example.com
+        * Port: 443
+* CORS means Cross-Origin Resource sharing, so we're going to be getting
+resources from a different origin
+* Allows making requests only if the other origin specifically allows other
+origins to make requests to it
+    * Same origin: http://example.com/app1 & http://example.com/app2
+    * Different origin: http://example.com & http://other.example.com
+* The requests won't be fulfilled unless the other origin allows for the
+requests, using CORS headers (ex: Access-Control-Allow-Origin)
+* An OPTIONS request is sent to ask if CORS requests are allowed
+  ![diagram](cors-example.JPG)
+* If a client does a cross-origin request on our S3 bucket, we need to 
+enable the correct CORS headers
+* You can allow for a specific origin or for * (all origins)
+* The CORS definition is in a separate block in the bucket configuration.
+Make sure that there isn't a trailing slash for the domain.
