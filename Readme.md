@@ -1273,6 +1273,9 @@ security/lifecycle
         * Client library such as the Amazon S3 Encryption Client can be used
         * Clients must decrypt data themselves when retrieving from S3
         * Customer fully manages the keys and encryption cycle
+    * You can require encryption using either a bucket policy or default 
+    encryption. Bucket policies are evaluated before default encryption,
+    so it can be used for overriding.
 * S3 security
     * User based - IAM policies attached to users define which API calls
     should be allowed for a specific user from the IAM console
@@ -1309,13 +1312,175 @@ security/lifecycle
     * MFA Delete: MFA can be required in versioned buckets to delete objects
     * Pre-signed URLs: URLs that are valid only for a limited time (ex. 
       premium video download service for logged in users)
+        * Can generate pre-signed URLs using SDK or CLI
+        * Easier for downloads, can use the CLI
+        * Difficult for uploads, must use the SDK
+        * Valid for a default of 3600 seconds, can change timeout with 
+        --expires-in [TIME_BY_SECONDS] argument
+        * Users given a pre-signed URL inherit the permissions of the person
+        who generated the URL for GET/PUT
 * S3 can host static websites and have them accessible on the WWW
 * If you get a 403 (Forbidden) error, make sure the bucket policy allows
 public reads!
 * As of December 2020 S3 is strongly consistent. That means that whenever 
 you modify the data and do a read afterwards, then you're going to see the
 correct results.
-  
+* Need versioning to turn on MFA delete for a bucket. Only the root account
+can enable/disable MFA-Delete
+* S3 can have access logs for audit purposes.
+    * Logs are sent to another bucket.
+    * Any request made to S3 will be logged.
+    * Do not set your logging bucket to be the same as the one you are
+    monitoring, otherwise it'll create a logging loop.
+    * When you turn on logging, then the permission to deliver logs is 
+    automatically added to the target bucket.
+* S3 replication (CRR - cross-region replication & SRR - same region replication)
+    * Must enable versioning in source and destination
+    * CRR must be turned on if they're in different regions
+    * SRR if they're in the same region
+    * Buckets can be in different accounts
+    * Copying is async, but very fast
+    * Must give proper IAM permissions to S3
+    * CRR use cases: compliance, lower latency access, replication across 
+    accounts
+    * SRR use cases: log aggregation, live replication between production and
+    test accounts
+    * Replication is not retroactive, only new objects will be replicated
+    * Can replicate delete markers from source to target optionally
+    * Deletions with a version ID are not replicated to avoid malicious deletes
+    * No chaining for bucket replications, only replicates to the directly connected
+    bucket
+* S3 storage classes
+    * A storage class is specified on an object, not bucket wide
+    * Amazon S3 Standard - General Purpose
+        * High durability of objects across multiple AZ
+        * If you store 10,000,000 objects with Amazon S3, you can on average
+        expect to incur a loss of a single object once every 10,000 years
+        * 99.99% availability over a given year
+        * Sustain 2 concurrent facility failures
+    * Amazon S3 Standard - Infrequent Access (IA)
+        * Suitable for data that is less frequently accessed, but requires
+        rapid access when needed
+        * Stored in multiple AZ
+        * High durability of objects across multiple AZ
+        * 99.9% availability
+        * Lower cost compared to S3 Standard
+        * Sustain 2 concurrent facility failures
+        * Use cases: as a data store for disaster recovery, backups etc
+    * Amazon S3 One Zone-Infrequent Access
+        * Same as IA, except a single AZ
+        * Data lost when AZ is destroyed
+        * 99.5% availability
+        * Lower cost compared to IA (by 20%)
+        * Use cases: storing secondary backup copies of on-premise data, or
+        storing data you can recreate
+    * Amazon S3 Intelligent Tiering
+        * Same low latency and high throughput performance of S3 standard
+        * Small monthly monitoring and auto-tiering fee
+        * Automatically moves objects between two access (Standard & IA) 
+        tiers based on changing access patterns
+        * Designed for high durability of objects across multiple AZs
+        * Resilient against events that impact an entire AZ
+        * Designed for 99.9% availability over a given year
+    * Amazon Glacier
+        * Low cost object storage meant for archiving/backup
+        * Data is retained for the long term (10s of years)
+        * Alternative to on-premise magnetic tape storage
+        * High durability
+        * Low cost per storage per month ($0.004 / GB) + retrieval cost
+        * Each item in Glacier is called "Archive" (up to 40 TB)
+        * Archives are stored in "Vaults"
+        * Retrieval options:
+            * Expedited (1 to 5 minutes), a lot more expensive
+            * Standard (3 to 5 hours)
+            * Bulk (5 to 12 hours) when you require multiple files at the
+            same time
+            * Minimum storage duration of 90 days
+    * Amazon Glacier Deep Archive
+        * For even longer term storage
+        * Even cheaper
+        * Retrieval options:
+            * Standard (12 hours)
+            * Bulk (48 hours)
+        * Minimum storage duration of 180 days
+    * You can transition objects between storage classes
+      ![diagram](object-transition.JPG)
+    * Transitioning objects can be done manually or automated using a 
+    lifecycle configuration
+        * Transition actions - defines when objects are transitioned to
+        another storage class
+            * Move objects to standard IA class 60 days after creation
+            * Move to Glacier for archiving after 6 months
+        * Expiration actions - configure objects to expire (delete) after some
+        time
+            * Access log files can be set to delete after 365 days
+            * Can be used to delete old versions of files (if versioning is 
+              enabled)
+            * Can be used to delete incomplete multi-part uploads
+        * Rules can be created for a certain prefix (ex. s3://mybucket/mp3/*)
+        * Rules can be created for certain object tags (ex. Department: Finance)
+* S3 baseline performance
+    * Amazon S3 automatically scales to high request rates, latency 100 - 200 ms
+    * Your application can achieve at least 3500 PUT/COPY/POST/DELETE and
+    5500 GET/HEAD requests per second per prefix in a bucket
+    * There are no limits to the number of prefixes in a bucket
+    * Example (object path => prefix):
+        * bucket/folder1/sub1/file => /folder1/sub1/
+        * bucket/folder1/sub2/file => /folder1/sub2/
+    * If you spread read across all N prefixes evenly, you can achieve
+    N * 5500 requests per second for GET/HEAD
+* S3 - KMS limitation
+    * If you use SSE-KMS, you may be impacted by the KMS limits
+    * When you upload, it calls the GenerateDataKey KMS API
+    * When you download, it calls the Decrypt KMS API
+    * Count towards the KMS quota per second (5500, 10000, 30000 req/s
+      base on region)
+    * You can request a quota increase using the Service Quotas Console
+* S3 performance
+    * Multi-part upload:
+        * Recommended for files > 100 MB, must use for files > 5 GB
+        * Can help parallelize uploads (speed up transfers)
+    * S3 transfer acceleration
+        * Have to enable it, additional pricing will occur
+        * Increases transfer speed by transferring file to an AWS edge location
+        which will forward the data to the S3 bucket in the target region
+        * Compatible with multi-part upload
+    * S3 byte-range fetches
+        * Parallelize GETs by requesting specific byte ranges
+        * Better resilience in case of failures
+          ![diagram](byte-range-fetch.JPG)
+* S3 Select & Glacier select
+    * Retrieve less data using SQL by performing server side filtering
+    * Can filter by rows & columns (simple SQL statements)
+    * Less network transfer, less CPU cost client-side
+    * Ex. queries for specific lines from a CSV file, so instead of sending
+    the entire thing, only specific lines are sent.
+* S3 event notifications
+    * S3:ObjectCreated, S3:ObjectRemoved etc
+    * Object name filtering possible (ex. *.jpg)
+    * Use case: generate thumbnails of images uploaded to S3
+    * Targets for S3 notifications are:
+        * Simple notification service (SNS) - send notifications and emails
+        * Simple queue service (SQS) - add messages into a queue
+        * Lambda functions - generate custom code
+    * Can create as many S3 events as desired
+    * S3 event notifications typically deliver events in seconds, but can 
+    take a minute or longer
+    * If two writes are made to a single non-versioned object at the same time,
+    it is possible that only a single event notification will be sent. If you want
+    to ensure that an event notification is sent for every successful write, 
+    you can enable versioning on your bucket.
+* S3 Athena
+    * Serverless service to perform analytics directly against S3 files
+    * Use SQL language to query the files
+    * Has a JDBC/ODBC driver
+    * Charged per query and amount of data scanned
+    * Supports CSV, JSON, ORC, Avro, and Parquet (built on Presto)
+    * Use cases: business intelligence/analytics/reporting, analyze & query,
+    VPC flow logs, ELB logs, CloudTrail trails etc
+    * Exam tip: Analyze data directly on S3 => use Athena
+
+
 **CORS**
 * An origin is a scheme (protocol), host (domain) and port
     * E.g. https://www.example.com (implied port is 443 for HTTPS, 80 for HTTP)
