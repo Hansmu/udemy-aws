@@ -1625,3 +1625,18 @@ Firewall
         encrypted (up to 10 fields)
         * Specify the public key to encrypt them
           ![diagram](cloudfront-encrypt.JPG)
+          
+<h2>ECS, ECR & Fargate</h2>
+There are three choices for managing Docker containers on AWS
+* ECS: Amazon's own platform
+* Fargate: Amazon's own serverless platform
+* EKS: Amazon's managed Kubernetes
+
+**ECS**
+* ECS clusters are logical groupings of EC2 instances
+* EC2 instance run the ECS agent (Docker container)
+* The ECS agents register the instance to the ECS cluster
+* The EC2 instances run a special AMI, made specifically for ECS
+
+**ECR**
+* Private docker registry - Amazon Elastic Container Registry (ECR)
