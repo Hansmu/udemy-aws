@@ -43,7 +43,7 @@ policy simulator service that you can use to test your policies. Could also use
 the AWS CLI. Some commands have the **--dry-run** option to simulate the
 running of the command.
 
-![diagram](iam_policy.PNG)
+![diagram](images/iam_policy.PNG)
 
 Multi factor authentication can be setup. Additionally there are predefined policies, that 
 can be used.
@@ -211,7 +211,7 @@ to a different kind of non-burstable instance. T2 unlimited can be used for
 unlimited burst credit balance, but you pay extra for going over the credit 
 balance.
 
-![diagram](instance_naming.PNG)
+![diagram](images/instance_naming.PNG)
 
 Tags can be added to make identifying the instance easier.
 
@@ -231,7 +231,7 @@ Having an Elastic IP on your account, even if unassociated, will cost money.
 The fundamental of network security in AWS. They control how traffic is allowed 
 into or out of our EC2 Machines. They are like the firewall for EC2 instances.
 
-![diagram](sec_group.JPG)
+![diagram](images/sec_group.JPG)
 
 Inbound rules are used to control traffic coming in and outbound traffic is
 used to define the traffic going out of the machine.
@@ -253,12 +253,12 @@ Security groups can be referenced from other security groups. This can be used
 to allow other EC2 instances to connect to another EC2 instance without dealing
 with IPs.
 
-![diagram](security_policy_firewall.PNG)
+![diagram](images/security_policy_firewall.PNG)
 
 **Never enter your access keys into an EC2 instance as someone else could retrieve
 them from it. Instead, use IAM roles.**
 
-![diagram](modify-iam.PNG)
+![diagram](images/modify-iam.PNG)
 
 <h2>EC2 User Data</h2>
 EC2 user data scripts can be used to bootstrap our instances. That is launching
@@ -441,7 +441,7 @@ AWS has 3 kinds of managed Load Balancers
         * IP addresses - must be private IPs
         * ALB can route to multiple target groups
         * Health checks are at the target group level
-![diagram](ALB-example.JPG)
+![diagram](images/ALB-example.JPG)
 
 * Network Load Balancer (v2 - new generation) - 2017
     * TCP, TLS (secure TCP), UDP (Layer 4)
@@ -461,7 +461,7 @@ AWS has 3 kinds of managed Load Balancers
 
 
 The source references the load balancer security group ID.
-![diagram](load_balance_setup.JPG)
+![diagram](images/load_balance_setup.JPG)
 
 **Load balancer good to know**
 * LBs can scale but not instantaneously - contact AWS for a "warm-up"
@@ -522,7 +522,7 @@ the same instance behind a load balancer
 EC2 you get stuck on. It then has an expiration time, after which a new EC2 instance is chosen.
 
 **Cross-zone load balancing**
-![diagram](cross-zone.JPG)
+![diagram](images/cross-zone.JPG)
 * CLB - disabled by default via CLI/API, enabled by default via console, 
   no charges for inter AZ data if enabled
 * ALB - always on (can't be disabled), no charges for inter AZ data
@@ -537,7 +537,7 @@ EC2 you get stuck on. It then has an expiration time, after which a new EC2 inst
     * Nowadays, TLS certificates are mainly used, but people still refer as SSL
     * Public SSL certificates are issued by Certificate Authorities (CA)
     * SSL certificates have an expiration date (you set) and must be renewed
-    ![diagram](ssl_over_lb.JPG)
+    ![diagram](images/ssl_over_lb.JPG)
     * The load balancer uses an X.509 certificate (SSL/TLS server certificate)
     * You can manage certificates using ACM (AWS Certificate Manager)
     * You can upload your own certificates to ACM alternatively
@@ -553,7 +553,7 @@ EC2 you get stuck on. It then has an expiration time, after which a new EC2 inst
     server in the initial SSL handshake
     * The server will then find the correct certificate, or return the default one
     * Only works for ALB & NLB (newer generation), CloudFront
-    ![diagram](sni-example.JPG)
+    ![diagram](images/sni-example.JPG)
 * You can setup SSL under listeners under load balancers. You specify HTTPS, cipher, which is
 the protocols we want to support, and then setup the certificate.
 
@@ -568,7 +568,7 @@ to the instance which is deregistring.
 * Between 1 to 3600 seconds, default is 300 seconds. Can be disabled by setting it to 0.
 * Set to a low value if your requests are short. E.g. you don't expect any request to last more
 than 20 seconds, then set it to 20 seconds.
-![diagram](connection-draining.JPG)
+![diagram](images/connection-draining.JPG)
 
 **Auto scaling groups (ASG)**
 * In real-life, the load on your websites and applications can change.
@@ -726,7 +726,7 @@ has a guide on how to do that.
 * Not necessary to detach volume to do snapshot, but recommended
 * Can copy snapshots across AZ or Region
 
-![diagram](snapshot-restore.PNG)
+![diagram](images/snapshot-restore.PNG)
 
 **AMI (Amazon Machine Image)**
 * AMI is a customization of an EC2 instance
@@ -744,7 +744,7 @@ has a guide on how to do that.
 * Build an AMI - this will also create EBS snapshots
 * Launch instances from other AMIs
 
-![diagram](ami-copy.PNG)
+![diagram](images/ami-copy.PNG)
 
 **EC2 instance store**
 * EBS volumes are network drives with good but "limited" performance
@@ -849,7 +849,7 @@ between the instances.
 * Replication is async, so reads are eventually consistent
 * Replicas can be promoted to their own DB
 * Applications must update the connection string to leverage read replicas
-![diagram](read-replica-db.JPG)
+![diagram](images/read-replica-db.JPG)
   
 * Example use case is when a reporting application wants to run, but running
 it would kill the DB, thus if a read replica is present, then it can simply
@@ -857,7 +857,7 @@ run on that.
 * In AWS there's a network cost when data goes from one AZ to another, but there
 are exceptions, and those exceptions are usually for managed services.
 * For RDS read replicas within the same region, you don't pay that fee
-![diagram](replica-region.JPG)
+![diagram](images/replica-region.JPG)
   
 **RDS Multi AZ (disaster recovery)**
 * SYNC replication
@@ -866,7 +866,7 @@ are exceptions, and those exceptions are usually for managed services.
 * No manual intervention in apps
 * Not used for scaling, as the standby unit has no I/O happening to it from
 an external source, only taking in the replication
-![diagram](disaster-recovery-db.JPG)
+![diagram](images/disaster-recovery-db.JPG)
 * Going from single AZ to multi AZ
     * Zero downtime operation (no need to stop the DB)
     * Just click on "modify" for the database
@@ -874,7 +874,7 @@ an external source, only taking in the replication
         * A snapshot is taken
         * A new DB is restored from the snapshot in the new AZ
         * Synchronization is established between the two databases
-          ![diagram](sync-establish-db.JPG)
+          ![diagram](images/sync-establish-db.JPG)
 
 **RDS security**
 * At rest encryption (data that's not in movement)
@@ -915,7 +915,7 @@ an external source, only taking in the replication
             * Network I/O must be encrypted using SSL
             * IAM to centrally manage users instead of DB
             * Can leverage IAM roles and EC2 instance profiles for easy integration
-              ![diagram](iam-auth.JPG)
+              ![diagram](images/iam-auth.JPG)
               
 **RDS-security - summary**
 * Encryption at rest:
@@ -956,7 +956,7 @@ is faster (sub 10 ms replica lag)
 
 You have a writer endpoint to connect to the master. Your read replicas can
 have auto scaling and to connect to those you have a reader endpoint.
-![diagram](aurora-endpoints.JPG)
+![diagram](images/aurora-endpoints.JPG)
 
 **ElastiCache**
 * Managed Redis or Memcached
@@ -964,7 +964,7 @@ have auto scaling and to connect to those you have a reader endpoint.
 * Helps reduce load off of databases for read intensive workloads
 * Helps make your application stateless, by storing the user session data
   inside of ElastiCache
-  ![diagram](stateless-elasticache.JPG)
+  ![diagram](images/stateless-elasticache.JPG)
 * AWS takes care of OS maintenance/patching, optimizations, setup, configuration,
 monitoring, failure recovery, and backups
 * Using ElastiCache involves heavy application code changes
@@ -974,7 +974,7 @@ ElastiCache
 * Cache must have an invalidation strategy to make sure the most current data is
 used in there. Choosing a proper invalidation strategy is the most difficult part
 about caches.
-![diagram](cache-strategy.JPG)
+![diagram](images/cache-strategy.JPG)
 * Redis vs Memcached
     * Redis
       * Multi AZ with auto-failover
@@ -1023,7 +1023,7 @@ with lazy-loading.
 * Name server resolves DNS queries (Authoritative vs non-authoritative)
 * Top level domain (TLD): .com, .us, .in, .gov, .org etc
 * Second level domain (SLD): amazon.com, google.com etc
-![diagram](domain-name.JPG)
+![diagram](images/domain-name.JPG)
 * DNS works by first turning to your local DNS server and asking if it knows
 about a domain. If it's not cached, then it'll turn to the Root DNS Server 
 and ask if it knows the domain. It'll say no, but that it knows about .com,
@@ -1031,7 +1031,7 @@ check this IP of the .com named server for more information. It'll in turn
 say that it knows a second level domain server, so you should check there.
 The SLD then says that yeah, I know it, here's the IP. The local DNS then
 caches the result in case someone else wants it as well.
-![diagram](how-dns-works.JPG)
+![diagram](images/how-dns-works.JPG)
 * Route 53 is a highly available, scalable, fully managed and authoritative DNS
     * Authoritative means that the customer(you) can update the DNS records
 * You buy or register your domain name with a Domain Ragistrar typically by 
@@ -1177,7 +1177,7 @@ caches the result in case someone else wants it as well.
 * NAT gateways (AWS-managed) & NAT instances (self-managed) allow your
 instances in your private subnets to access the internet while remaining
 private.
-![diagram](nat-gateway.JPG)
+![diagram](images/nat-gateway.JPG)
 * Network ACL (NACL)
     * A firewall which controls traffic from and to subnet
     * Can have ALLOW and DENY rules
@@ -1211,7 +1211,7 @@ and AWS. The connection is private, secure, and fast. It goes over a private
   network. Takes at least a month to establish.
 * Site-to-site VPN and DX cannot access VPC endpoints
 * Typical 3-tier solution architecture
-  ![diagram](typical-3-tier.JPG)
+  ![diagram](images/typical-3-tier.JPG)
   
 <h2>S3</h2>
 * Stores objects (files) into 'buckets' (directories)
@@ -1225,7 +1225,7 @@ and AWS. The connection is private, secure, and fast. It goes over a private
     * Must start with lowercase letter or number
 * Files have keys. The key is the full path inside the bucket.
 * The key is composed of a prefix + object name.
-  ![diagram](prefix-and-object.JPG)
+  ![diagram](images/prefix-and-object.JPG)
 * There's no concept of directories within buckets, just keys with very
 long names that contain slashes
 * Object values are the content of the body, max object size is 5 TB
@@ -1290,7 +1290,7 @@ security/lifecycle
         and there is no explicit deny
     * S3 bucket policies
         * JSON based policies
-          ![diagram](iam_policy.PNG)
+          ![diagram](images/iam_policy.PNG)
         * Explicit DENY in an IAM policy will take precedence over a bucket
           policy permission
         * Use S3 bucket policies to
@@ -1404,7 +1404,7 @@ can enable/disable MFA-Delete
             * Bulk (48 hours)
         * Minimum storage duration of 180 days
     * You can transition objects between storage classes
-      ![diagram](object-transition.JPG)
+      ![diagram](images/object-transition.JPG)
     * Transitioning objects can be done manually or automated using a 
     lifecycle configuration
         * Transition actions - defines when objects are transitioned to
@@ -1448,7 +1448,7 @@ can enable/disable MFA-Delete
     * S3 byte-range fetches
         * Parallelize GETs by requesting specific byte ranges
         * Better resilience in case of failures
-          ![diagram](byte-range-fetch.JPG)
+          ![diagram](images/byte-range-fetch.JPG)
 * S3 Select & Glacier select
     * Retrieve less data using SQL by performing server side filtering
     * Can filter by rows & columns (simple SQL statements)
@@ -1496,7 +1496,7 @@ origins to make requests to it
 * The requests won't be fulfilled unless the other origin allows for the
 requests, using CORS headers (ex: Access-Control-Allow-Origin)
 * An OPTIONS request is sent to ask if CORS requests are allowed
-  ![diagram](cors-example.JPG)
+  ![diagram](images/cors-example.JPG)
 * If a client does a cross-origin request on our S3 bucket, we need to 
 enable the correct CORS headers
 * You can allow for a specific origin or for * (all origins)
@@ -1531,7 +1531,7 @@ Firewall
     With S3 you have OAI to allow for access, but for EC2/ALB you have to
     allow public access from a list of IPs that correspond to edge locations.
     AWS has a list that you can use.
-      ![diagram](cloudfront-high-level.JPG)
+      ![diagram](images/cloudfront-high-level.JPG)
 * Geo Restriction
     * You can restrict who can access your distribution
         * Whitelist: Allow your users to access your content only if they're
@@ -1567,7 +1567,7 @@ Firewall
     * The cache lives at each CloudFront edge location
     * You can also send a manual cache invalidation from AWS
     * To maximize cache hits you should separate static and dynamic content
-      ![diagram](separate-dynamic-static.JPG)
+      ![diagram](images/separate-dynamic-static.JPG)
 * Signed URL/Signed Cookies
     * You want to distribute paid shared content to premium users over the 
     world
@@ -1614,7 +1614,7 @@ Firewall
     * To increase high-availability and do failover
     * Origin group: one primary and one secondary origin
     * If the primary origin fails, the second one is used
-      ![diagram](origin-groups.JPG)
+      ![diagram](images/origin-groups.JPG)
 * Field level encryption
     * Protect user sensitive information through application stack
     * Adds an additional layer of security along with HTTPS
@@ -1624,7 +1624,7 @@ Firewall
         * Specify set of fields in POST requests that you want to be
         encrypted (up to 10 fields)
         * Specify the public key to encrypt them
-          ![diagram](cloudfront-encrypt.JPG)
+          ![diagram](images/cloudfront-encrypt.JPG)
           
 <h2>ECS, ECR & Fargate</h2>
 There are three choices for managing Docker containers on AWS
@@ -1663,7 +1663,7 @@ alongside the service.
     * Allow each task to have a specific role
     * Use different roles for the different ECS services you run
     * Task roles is defined in the task definition
-      ![diagram](ecs-access.PNG)
+      ![diagram](images/ecs-access.PNG)
 * ECS tasks placement
   * When a task of type EC2 is launched, ECS must determine 
   where to place it, with the constraints of CPU, memory, and
@@ -1845,20 +1845,20 @@ RDS etc.
     (only one application version at a time)
     * Tiers (which type of application you are going to be 
     creating): Web server environment tier & worker environment tier
-      ![diagram](web-env-worker-env.PNG)
+      ![diagram](images/web-env-worker-env.PNG)
     * You can create multiple environments (dev, test, prod etc)
 * Supported platforms
   * Supports multiple platforms by default (Go, Java SE, Python etc)
   * If a technology isn't supported, then you can write your custom
   platform
 * Deployment modes
-  ![diagram](deployment-modes.PNG)
+  ![diagram](images/deployment-modes.PNG)
 * Deployment options for updates
   * All at once (deploy all in one go) - fastest, but instances aren't
   available to serve traffic for a bit (downtime)
     * First, all the applications get stopped
     * Second, everything gets redeployed with version 2
-      ![diagram](all-at-once-deploy.PNG)
+      ![diagram](images/all-at-once-deploy.PNG)
   * Rolling - update a few instances at a time (bucket), and then
   move onto the next bucket once the first bucket is healthy
     * Application is running below capacity
@@ -1872,7 +1872,7 @@ RDS etc.
     * Application is running both versions simultaneously
     * No additional cost, still the same number of instances
     * Long deployment
-    ![diagram](rolling-deploy.PNG)
+    ![diagram](images/rolling-deploy.PNG)
   * Rolling with additional batches - like rolling, but spins up
   new instances to move the batch (so that the old application is
   still available)
@@ -1892,7 +1892,7 @@ RDS etc.
     batches/buckets with a size of 2. So we deploy 2 extra V2s, 
     then remove the first 2 V1s, replace them with 2 V2s, repeat,
     until all are V2s. Finally, remove the initial additional V2s.
-      ![diagram](rolling-with-additional-batches-deploy.PNG)
+      ![diagram](images/rolling-with-additional-batches-deploy.PNG)
   * Immutable - spins up new instances in a new ASG, deploys version
   to these instances, and then swaps all the instances when
   everything is healthy
@@ -1910,7 +1910,7 @@ RDS etc.
     be moved to the current ASG. After that is done the initial V1
     instances will be terminated and the temporary ASG will be 
     removed.
-      ![diagram](immutable-deploy.PNG)
+      ![diagram](images/immutable-deploy.PNG)
 * Elastic Beanstalk CLI
   * We can install an additional CLI called the "EB CLI" which 
   makes working with Beanstalk from the CLI easier
@@ -2018,7 +2018,7 @@ RDS etc.
   definition
   * Your Docker images must be pre-built and stored in
   a repo (ECR or Docker hub)
-  ![diagram](multi-docker-beanstalk.PNG)
+  ![diagram](images/multi-docker-beanstalk.PNG)
 * Elastic Beanstalk and HTTPS
   * Beanstalk with HTTPS
     * Load the SSL certificate onto the load balancer
@@ -2041,7 +2041,7 @@ RDS etc.
   * Decoupling your application into two tiers is common
   * Example: processing a video, generating a zip file, etc.
   * You can define period tasks in a file cron.yaml
-    ![diagram](common-worker-web-architecture.PNG)
+    ![diagram](images/common-worker-web-architecture.PNG)
 * Elastic Beanstalk - custom platform (advanced)
   * Custom platforms are very advanced, they allow to define from
   scratch:
@@ -2075,7 +2075,7 @@ test
 the green environment works. Do all of your testing, measurements.
 Once you're satisfied, you swap the environment.
 * You can swap the environment URLs in AWS in Elastic Beanstalk
-![diagram](green-blue-deployment.PNG)
+![diagram](images/green-blue-deployment.PNG)
 
 **Traffic splitting**
 * Canary testing
@@ -2091,5 +2091,5 @@ this triggers an automated rollback (very quick)
 * No application downtime
 * New instances are migrated from the temporary to the 
 original ASG
-  ![diagram](canary-testing-deployment-aws.PNG)
-  ![diagram](canary-testing-deployment.png)
+  ![diagram](images/canary-testing-deployment-aws.PNG)
+  ![diagram](images/canary-testing-deployment.png)
