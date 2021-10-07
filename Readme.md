@@ -2538,3 +2538,48 @@ with the exact configuration that you specify
   how you name conditions. Can contain Fn::And, Fn::Equals,
   Fn::If, Fn::Not, Fn::Or
     ![diagram](images/conditions-example.PNG)
+* CloudFormation Rollbacks
+    * Stack Creation Fails:
+        * Default: Everything rolls back (gets deleted). We can look
+    at the log
+        * Option to disable rollback and troubleshoot what happened
+    * Stack update fails:
+        * The stack automatically rolls back to the previous known
+    working state
+        * Ability to see in the log what happened and error messages
+* ChangeSets
+    * When you update a stack, you need to know what changes before it
+    happens for greater confidence
+    * ChangeSets won't say if the update will be successful
+* Nested stacks
+    * Nested stacks are stacks as part of other stacks
+    * They allow you to isolate repeated patterns/common components
+    in separate stacks and call them from other stacks
+    * Example:
+        * Load balancer configuration that is re-used
+        * Security group that is re-used
+    * Nested stacks are considered best practice
+    * To update a nested stack, always update the parent (root stack)
+* Cross stacks vs nested stacks
+    * Helpful when stacks have different lifecycles
+    * Use outputs export and Fn::ImportValue
+    * When you need to pass export values to many stacks
+* Nested stacks
+    * Helpful when components must be re-used
+    * Example: re-use how to properly configure an ALB
+    * The nested stack only is important to the higher level stack (it's
+      not shared)
+* StackSets
+    * Create, update, or delete stacks across multiple accounts and
+    regions with a single operation
+    * Administrator account to create StackSets
+    * Trusted accounts to create, update, delete stack instances from
+    StackSets
+    * When you update a stack set, all associated stack instances are
+    updated throughout all accounts and regions
+* CloudFormation drift
+    * CloudFormation allows you to create infrastructure, but it 
+      doesn't protect you against manual configuration changes
+    * How do we know if our resources have drifted? We can use 
+      CloudFormation drift
+    * Not all resources are supported yet
