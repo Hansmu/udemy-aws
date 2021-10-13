@@ -2899,3 +2899,59 @@ troubleshoot
 * CloudTrail Events Retention
   * Events are stored for 90 days in CloudTrail
   * To keep events beyond this period, log them to S3 and use Athena
+
+
+<h2>AWS Integration & Messaging</h2>
+**SNS**
+
+**Amazon SQS - Standard queue**
+* Oldest offering (over 10 years old)
+* Fully managed service, used to decouple applications
+* Attributes
+  * Unlimited throughput, unlimited number of messages in queue
+  * Messages are short-lived - default retention of messages is 4 day,
+  maximum of 14 days
+  * Low latency (<10 ms on publish and receive)
+  * Limitation of 256 kb per message sent
+* Can have duplicate messages (at least once delivery, occasionally)
+* Can have out of order messages (best effort ordering)
+* Producing messages
+  * Produced to SQS using the SDK (SendMessage API)
+  * The message is persisted in SQS until a consumer deletes it
+  * Message retention default 4 days, up to 14 days
+  * Example: send an order to be processed
+    * Order id
+    * Customer id
+    * Any attributes you want
+  * SQS standard: unlimited throughput
+* Consuming messages
+  * Consumers (running on EC2 instances, servers, or AWS lambda etc.)
+  * Poll SQS for messages (receive up to 10 messages at a time)
+  * Process the messages (example: insert the message into an RDS DB)
+  * Delete the messages using the DeleteMessage API
+* Multiple EC2 instance consumers
+  * Consumers receive and process messages in parallel
+  * At least once delivery
+  * Best-effort message ordering
+  * Consumers delete messages after processing them
+  * We can scale consumers horizontally to improve throughput of processing
+* SQS with ASG
+  * Use a CloudWatch Metric of queue length to decide whether new instances are needed
+    ![diagram](images/sqs-with-asg.PNG)
+* SQS to decouple between application tiers
+  * E.g. video processing might take very long, so it's easier to delegate it to
+  another app that's attached to a queue.
+    ![diagram](images/application-tier-examples-sqs.PNG)
+* Amazon SQS - Security
+  * Encryption:
+    * In-flight encryption using HTTPS API
+    * At-rest encryption using KMS keys
+    * Client-side encryption if the client wants to perform
+    encryption/decryption itself
+  * Access controls: IAM policies to regulate access to the SQS API
+  * SQS access policies (similar to S3 bucket policies)
+    * Useful for cross-account access to SQS queues
+    * Useful for allowing other services (SNS, S3, etc.) to write 
+    to an SQS queue
+
+**Kinesis**
