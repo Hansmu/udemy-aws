@@ -2902,7 +2902,59 @@ troubleshoot
 
 
 <h2>AWS Integration & Messaging</h2>
-**SNS**
+** Amazon SNS - Simple notification service**
+* What if you want to send one message to many receivers?
+  ![diagram](images/sns-pub-sub.JPG)
+* The event producer only sends a message to one SNS topic
+* As many event receivers (subscriptions) as we want to listen to the SNS
+topic notifications
+* Each subscriber to the topic will get all the messages (note: new 
+  feature to filter messages)
+* Up to 10,000,000 subscriptions per topic
+* 100,000 topics limit
+* Subscribers can be:
+    * SQS
+    * HTTP/HTTPS (with delivery retries - how many times)
+    * Lambda
+    * Emails
+    * SMS messages
+    * Mobile notifications
+* Many AWS services can send data directly to SNS for notifications:
+  CloudWatch (for alarms), Auto scaling groups notifications,
+  Amazon S3 (on bucket events), CloudFormation (upon state changes =>
+  failed to build etc.) etc.
+* How to publish
+    * Topic publish (using the SDK)
+        * Create a topic
+        * Create a subscription (or many)
+        * Publish to the topic
+    * Direct publish (for mobile apps SDK)
+        * Create a platform application
+        * Create a platform endpoint
+        * Publish to the platform endpoint
+        * Works with Google GCM, Apple APNS, Amazon ADM etc.
+* Security
+    * Encryption
+        * In-flight encryption using HTTPS API
+        * At-rest encryption using KMS keys
+        * Client side encryption if the client wants to perform encryption/decryption
+        itself
+    * Access controls - IAM policies to regulate access to the SNS API
+    * SNS access policies (similar to S3 bucket policies)
+        * Useful for cross-account access to SNS topics
+        * Useful for allowing other services (S3 etc.) to write to an SNS topic
+* FIFO topic
+    * First in first out (ordering of messages in the topic)
+    * Similar features as SQS FIFO
+        * Ordering by message group ID (all messages in the same group
+          are ordered)
+        * Deduplication using a deduplication ID or content based deduplication
+    * Can only have SQS FIFO queues as subscribes
+    * Limited throughput (same throughput as SQS FIFO)
+* Message filtering
+    * JSON policy used to filter messages sent to SNS topic's subscriptions
+    * If a subscription doesn't have a filter policy, it receives every message
+      ![diagram](images/sns-sqs-filtering.JPG)
 
 **Amazon SQS - Standard queue**
 * Oldest offering (over 10 years old)
@@ -2953,5 +3005,115 @@ troubleshoot
     * Useful for cross-account access to SQS queues
     * Useful for allowing other services (SNS, S3, etc.) to write 
     to an SQS queue
+* SQS - Message Visibility Timeout
+    * After a message is polled by a consumer, it becomes invisible
+    to other consumers
+    * By default, the "message visibility timeout" is 30 seconds
+    * That means the message has 30 seconds to be processed
+    * After the message visibility timeout is over, the message is 
+    "visible" in SQS
+    * If a message is not processed within the visibility timeout, it
+    will be processed twice
+    * If the consumer knows that the processing will take longer, then 
+    it can call the ChangeMessageVisibility API to get more time
+    * If visibility timeout is high (hours), and the consumer crashes,
+    then re-processing will take a lot of time due to the message being
+    invisible
+    * If visibility timeout is too low (seconds), we may get duplicate
+    processing
+    * So the visibility timeout should be set to something reasonable for
+    your application
+* Dead Letter Queue
+    * If a consumer fails to process a message within the Visibility Timeout
+    then the message goes back to the queue
+    * We can get a threshold of how many times a message can go back to
+    the queue
+    * After the MaximumReceives threshold is exceeded, the message goes into
+    a dead letter queue (DLQ)
+    * Useful for debugging
+    * Make sure to process the messages in the DLQ before they expire:
+        * Good to set a retention of 14 days in the DLQ
+    * It's another queue that you create with the purpose of being a DLQ.
+    You then go back to your initial queue and specify that a DLQ is enabled,
+    after that you specify the dead letter queue ARN.
+* Delay queue
+    * Delay a message (consumers don't see it immediately) up to 15 minutes
+    * Default is 0 seconds (message is available right away)
+    * Can set a default at queue level
+    * Can override the default on send using the DelaySeconds parameter
+* Long polling
+    * When a consumer requests messages from the queue, it can optionally
+    "wait" for messages to arrive if there are none in the queue. This is
+    called long polling.
+    * Long Polling decreases the number of API calls made to SQS while 
+    increasing the efficiency and latency of your application
+    * The wait time can be between 1 sec to 20 sec (20 sec preferable)
+    * Long polling is preferable to short polling (which is constant querying)
+    * Long polling can be enabled at the queue level or at the API level
+    using WaitTimeSeconds
+* Extended client
+    * Message size limit is 256 KB, how to send large messages, e.g. 1 GB?
+    * Using the SQS Extended Client (Java library)
+    * It uses an S3 bucket for large data
+    * Small metadata message will be sent to the queue and the file itself
+    will be uploaded to S3.
+      ![diagram](images/extended-client-sqs.JPG)
+* Must know API
+    * CreateQueue - creates a queue. MessageRetentionPeriod can be used to
+    set how long a message should be kept in the queue
+    * DeleteQueue - deletes a queue and all the messages in the queue at the
+    same time
+    * PurgeQueue - deletes all the messages in the queue
+    * SendMessage - to send messages. Use the DelaySeconds to set a delay for
+    the message.
+    * ReceiveMessage - to do polling
+    * DeleteMessage - to delete a message
+    * MaxNumberOfMessages - how many messages a consumer can receive at one
+    time. The default is set to 1. Maximum can be 10 (for ReceiveMessage API)
+    * ReceiveMessageWaitTimeSeconds - for long polling. Tells the consumer how
+    long to wait before getting a response from the queue.
+    * ChangeMessageVisibility - change the message timeout in case you need
+    more time to process the message.
+    * Batch APIs can be used for SendMessage, DeleteMessage, ChangeMessageVisibility
+    to help decrease the number of API calls and thus the cost.
+* FIFO queue
+    * FIFO - first in first out (ordering of messages in the queue)
+    * Since we are guaranteeing the order, then there is limited throughput
+    at 300 messages/second without batching, 3000 messages/second with
+    * Exactly once send capability (by removing duplicates).
+    * Messages are processed in order by the consumer
+    * Deduplication
+        * Deduplication interval is 5 minutes. So if you send a duplicate
+        message within that window, then that duplicate message will be
+        refused.
+        * Two de-duplication methods:
+            * Content based deduplication - will do an SHA-256 hash of the
+            message body.
+            * Explicitly provide a message deduplication ID.
+    * Message grouping
+        * If you specify the same value of MessageGroupID in an SQS FIFO
+        queue, you can only have one consumer, and all the messages are
+        in order for that one consumer.
+        * To get ordering at the level of a subset of messages, specify 
+        different values for MessageGroupID
+            * Messages that share a common Message Group ID will be in 
+            order within the group.
+            * Each group can have a different consumer (parallel processing)
+            * Ordering across groups is not guaranteed
+
+** SNS + SQS: Fan out ** 
+* Push once to SNS, receive in all SQS queues that are subscribers.
+  ![diagram](images/fan-out.JPG)
+* It's a fully decoupled model and there is no data loss.
+* SQS allows for data persistence, delayed processing and retries of work
+* Ability to add more SQS subscribers over time
+* Make sure your SQS queue access policy allows for SNS to write
+* Application: S3 events to multiple queues
+    * For the same combination of event type (e.g. object create) and
+    prefix (e.g. images/), you can only have one S3 event rule
+    * If you want to send the same S3 event to many SQS queues, use fan-out
+      ![diagram](images/fan-out-s3-example.JPG)
+* SNS FIFO + SQS FIFO: Fan out
+    * In case you need fan out + ordering + deduplication
 
 **Kinesis**
