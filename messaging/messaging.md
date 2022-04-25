@@ -260,7 +260,7 @@
           a partition key that is distributed enough. If one device is extremely chatty, then
           it might overwhelm a shard. So use a highly distributed partition key to avoid
           "hot partition".
-          ![diagram](./images/kinesis-data-streams.PNG)
+          ![diagram](./images/data-stream-producers.PNG)
         * ProvisionedThroughputExceeded error
             * If you go over the 1 MB/sec limit to a shard, then you'll get a
               ProvisionedThroughputExceeded error. The solution is to use a highly
