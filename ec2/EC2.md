@@ -106,8 +106,9 @@ you with all sorts of different things that you might be interested in.
 Example `curl http://169.254.169.254/latest/meta-data/instance-id`.
 
 <h2>EC2 Instance Launch Types</h2>
-**On demand instances - short workload, predictable pricing. Great for elastic
-workloads. That is a system that's able to adapt to the required workload.**
+
+**On demand instances - short workload, predictable pricing. Great 
+for elastic workloads. That is a system that's able to adapt to the required workload.**
 * Pay for what you use (billing per second, after the first minute)
 * Has the highest cost but no upfront payment
 * No long term commitment
