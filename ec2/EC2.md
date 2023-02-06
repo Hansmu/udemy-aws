@@ -54,7 +54,7 @@ to it. Or we can use a load balancer and not use a public IP at all.
 Having an Elastic IP on your account, even if unassociated, will cost money.
 
 <h2>Security Group</h2>
-The fundamental of network security in AWS. They control how traffic is allowed
+The fundamentals of network security in AWS. They control how traffic is allowed
 into or out of our EC2 Machines. They are like the firewall for EC2 instances.
 
 ![diagram](./images/sec_group.JPG)
@@ -96,7 +96,8 @@ EC2 user data is used to automate boot tasks such as:
 * Downloading common files from the internet
 * Anything you can think of
 
-Under `Configure details` you can find `User data` under `Advanced details`.
+When you go into the instance details, you can find `User data` under
+`Advanced details`.
 
 If you want to get metadata about your EC2 instance using the command line,
 then it is possible to connect to the EC2 instance using SSH and on it you
