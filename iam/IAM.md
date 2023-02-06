@@ -1,10 +1,6 @@
 <h2>IAM (Identity and Access Management)</h2>
 This is where the AWS security is.
 
-* Users - physical people
-* Groups - made up of users. Users can belong to multiple groups.
-* Roles
-
 Root account should never be used (and shared). Only use it for the very first time to
 create an account and then never again.
 
